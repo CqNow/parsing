@@ -1,4 +1,3 @@
-import products as products
 import requests
 import json
 
