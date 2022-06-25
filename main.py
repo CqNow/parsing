@@ -35,8 +35,16 @@ def get_data():
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',
     }
+
+    response = requests.get('https://roscarservis.ru/catalog/legkovye/?sort%5Bprice%5D=asc&form_id=catalog_filter_form&filter_mode=params&filter_type=tires&diskType=1&arCatalogFilter_458_1500340406=Y&set_filter=Y')
+    soup = BeautifulSoup(response.text, 'lxml')
+    total_page = int(soup.find_all('a', class_='pagination__page')[-1].get_text())
+
+
     all_wires = []
-    for i in range(1, 188):
+    count = 1
+
+    for i in range(1, total_page+1):
         print(f'Page {i}')
         params = {
             'sort[price]': 'asc',
@@ -55,6 +63,7 @@ def get_data():
 
         items = json.loads(response.text)['items']
         for item in items:
+            print(f'Item add {count}')
             store_list = []
             total_amount = 0
             for store in item['commonStores']:
@@ -75,7 +84,8 @@ def get_data():
                 'total_amount' : total_amount
             }
             all_wires.append(data)
-            print('Items done')
+            count += 1
+
     with open('result.json', 'a', encoding='UTF-8') as file:
         json.dump(all_wires, file, indent=4, ensure_ascii=False)
 
